@@ -11,6 +11,7 @@ import {
   Shield,
   DollarSign,
   Play,
+  X,
 } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import StatCard from '@/components/StatCard';
@@ -25,9 +26,16 @@ import {
 type TabType = 'sessions' | 'lots' | 'deposit';
 
 export default function Auction() {
-  const { auctionSessions, auctionLots, auctionBids, customers } = useStore();
+  const { auctionSessions, auctionLots, auctionBids, customers, updateCustomerDeposit } = useStore();
   const [activeTab, setActiveTab] = useState<TabType>('sessions');
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
+  const [depositModal, setDepositModal] = useState<{
+    customerId: string;
+    customerName: string;
+    action: 'recharge' | 'refund';
+    currentDeposit: number;
+  } | null>(null);
+  const [depositAmount, setDepositAmount] = useState('');
 
   const upcomingSessions = auctionSessions.filter((s) => s.status === 'upcoming');
   const ongoingSessions = auctionSessions.filter((s) => s.status === 'ongoing');
@@ -47,6 +55,32 @@ export default function Auction() {
     return auctionBids
       .filter((b) => b.lotId === lotId)
       .sort((a, b) => b.price - a.price);
+  };
+
+  const handleDepositConfirm = () => {
+    if (!depositModal) return;
+    const amount = parseFloat(depositAmount);
+    if (isNaN(amount) || amount <= 0) {
+      alert('请输入有效的金额');
+      return;
+    }
+    if (depositModal.action === 'refund' && amount > depositModal.currentDeposit) {
+      alert('退还金额不能超过当前保证金余额');
+      return;
+    }
+    updateCustomerDeposit(depositModal.customerId, amount, depositModal.action);
+    setDepositModal(null);
+    setDepositAmount('');
+  };
+
+  const openDepositModal = (
+    customerId: string,
+    customerName: string,
+    action: 'recharge' | 'refund',
+    currentDeposit: number
+  ) => {
+    setDepositModal({ customerId, customerName, action, currentDeposit });
+    setDepositAmount('');
   };
 
   return (
@@ -343,10 +377,30 @@ export default function Auction() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
-                        <button className="text-xs text-bronze-600 hover:text-bronze-700">
+                        <button
+                          onClick={() =>
+                            openDepositModal(
+                              customer.id,
+                              customer.name,
+                              'recharge',
+                              customer.deposit
+                            )
+                          }
+                          className="text-xs text-bronze-600 hover:text-bronze-700 font-medium"
+                        >
                           充值
                         </button>
-                        <button className="text-xs text-warm-gray-500 hover:text-warm-gray-600">
+                        <button
+                          onClick={() =>
+                            openDepositModal(
+                              customer.id,
+                              customer.name,
+                              'refund',
+                              customer.deposit
+                            )
+                          }
+                          className="text-xs text-warm-gray-500 hover:text-warm-gray-600 font-medium"
+                        >
                           退还
                         </button>
                       </div>
@@ -429,6 +483,66 @@ export default function Auction() {
           </table>
         </div>
       </div>
+
+      {depositModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div className="p-5 border-b border-paper-200 flex items-center justify-between">
+              <h3 className="font-serif font-semibold text-ink-800 text-lg">
+                {depositModal.action === 'recharge' ? '保证金充值' : '保证金退还'}
+              </h3>
+              <button
+                onClick={() => setDepositModal(null)}
+                className="text-warm-gray-400 hover:text-warm-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div className="bg-paper-50 rounded-lg p-4">
+                <p className="text-sm text-warm-gray-600">客户名称</p>
+                <p className="text-base font-medium text-ink-800 mt-1">
+                  {depositModal.customerName}
+                </p>
+                <p className="text-sm text-warm-gray-600 mt-3">当前保证金余额</p>
+                <p className="text-lg font-bold text-bronze-600 mt-1">
+                  {formatPrice(depositModal.currentDeposit)}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-warm-gray-700 mb-1">
+                  {depositModal.action === 'recharge' ? '充值金额（元）' : '退还金额（元）'}
+                </label>
+                <input
+                  type="number"
+                  value={depositAmount}
+                  onChange={(e) => setDepositAmount(e.target.value)}
+                  placeholder={`请输入${depositModal.action === 'recharge' ? '充值' : '退还'}金额`}
+                  className="w-full px-3 py-2 border border-paper-300 rounded-lg focus:ring-2 focus:ring-bronze-400 focus:border-bronze-400 outline-none"
+                />
+              </div>
+            </div>
+            <div className="p-5 border-t border-paper-200 bg-paper-50 flex justify-end gap-3">
+              <button
+                onClick={() => setDepositModal(null)}
+                className="px-4 py-2 text-sm text-warm-gray-600 hover:text-warm-gray-800 border border-paper-300 rounded-lg bg-white"
+              >
+                取消
+              </button>
+              <button
+                onClick={handleDepositConfirm}
+                className={`px-4 py-2 text-sm text-white rounded-lg font-medium ${
+                  depositModal.action === 'recharge'
+                    ? 'bg-bronze-500 hover:bg-bronze-600'
+                    : 'bg-vermilion-500 hover:bg-vermilion-600'
+                }`}
+              >
+                确认{depositModal.action === 'recharge' ? '充值' : '退还'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

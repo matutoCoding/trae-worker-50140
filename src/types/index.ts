@@ -8,9 +8,9 @@ export interface Collection {
   origin: string;
   description: string;
   imageUrl: string;
-  status: 'pending' | 'authentic' | 'replica' | 'graded' | 'listed' | 'sold';
+  status: 'pending' | 'authentic' | 'replica' | 'suspicious' | 'graded' | 'listed' | 'sold';
   estimatedValue: number;
-  riskLevel: 'low' | 'medium' | 'high';
+  riskLevel: 'low' | 'medium' | 'high' | 'warning';
   createdAt: string;
   collectorId?: string;
 }

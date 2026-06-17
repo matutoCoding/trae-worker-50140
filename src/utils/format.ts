@@ -30,6 +30,7 @@ export function getStatusText(status: string): string {
     pending: '待鉴定',
     authentic: '已鉴定',
     replica: '仿品',
+    suspicious: '存疑',
     graded: '已评级',
     listed: '已上架',
     sold: '已成交',
@@ -51,6 +52,7 @@ export function getStatusColor(status: string): string {
     pending: 'bg-amber-100 text-amber-700 border-amber-200',
     authentic: 'bg-emerald-100 text-emerald-700 border-emerald-200',
     replica: 'bg-red-100 text-red-700 border-red-200',
+    suspicious: 'bg-orange-100 text-orange-700 border-orange-200',
     graded: 'bg-sky-100 text-sky-700 border-sky-200',
     listed: 'bg-indigo-100 text-indigo-700 border-indigo-200',
     sold: 'bg-gray-100 text-gray-700 border-gray-200',
@@ -73,6 +75,7 @@ export function getRiskLevelText(level: string): string {
     low: '低风险',
     medium: '中风险',
     high: '高风险',
+    warning: '待复核',
   };
   return map[level] || level;
 }
@@ -82,6 +85,7 @@ export function getRiskLevelColor(level: string): string {
     low: 'bg-emerald-100 text-emerald-700',
     medium: 'bg-amber-100 text-amber-700',
     high: 'bg-red-100 text-red-700',
+    warning: 'bg-orange-100 text-orange-700',
   };
   return map[level] || 'bg-gray-100 text-gray-700';
 }

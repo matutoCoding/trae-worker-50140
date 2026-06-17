@@ -12,6 +12,7 @@ import {
   FileCheck,
   Package,
   ArrowRight,
+  HelpCircle,
 } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import StatCard from '@/components/StatCard';
@@ -36,6 +37,7 @@ export default function Traceability() {
 
   const totalTraces = traceRecords.length;
   const highRiskCount = collections.filter((c) => c.riskLevel === 'high').length;
+  const warningCount = collections.filter((c) => c.riskLevel === 'warning').length;
   const soldCount = collections.filter((c) => c.status === 'sold').length;
   const inStockCount = collections.filter(
     (c) => c.status !== 'sold' && c.status !== 'replica'
@@ -118,10 +120,22 @@ export default function Traceability() {
           subtitle="完成交易藏品"
         />
         <StatCard
-          title="风险预警"
+          title="风险预警（仿品）"
           value={highRiskCount}
           icon={AlertTriangle}
-          subtitle="高风险待处理"
+          subtitle="已确认为仿品"
+          valueColor="text-red-600"
+          iconBg="bg-red-100"
+          iconColor="text-red-600"
+        />
+        <StatCard
+          title="存疑待复核"
+          value={warningCount}
+          icon={HelpCircle}
+          subtitle="存疑需进一步鉴定"
+          valueColor="text-orange-600"
+          iconBg="bg-orange-100"
+          iconColor="text-orange-600"
         />
       </div>
 
@@ -166,6 +180,9 @@ export default function Traceability() {
                         </h4>
                         {collection.riskLevel === 'high' && (
                           <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0 ml-2" />
+                        )}
+                        {collection.riskLevel === 'warning' && (
+                          <HelpCircle className="w-4 h-4 text-orange-500 flex-shrink-0 ml-2" />
                         )}
                       </div>
                       <p className="text-xs text-warm-gray-500 mt-0.5">
@@ -334,41 +351,82 @@ export default function Traceability() {
             <h3 className="font-serif font-semibold text-ink-800">风险预警</h3>
           </div>
         </div>
-        <div className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {collections
-              .filter((c) => c.riskLevel === 'high')
-              .slice(0, 6)
-              .map((collection) => (
-                <div
-                  key={collection.id}
-                  className="flex items-center gap-3 p-3 bg-red-50 rounded-xl border border-red-100"
-                >
-                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-paper-200 flex-shrink-0">
-                    <img
-                      src={collection.imageUrl}
-                      alt={collection.name}
-                      className="w-full h-full object-cover"
-                    />
+        <div className="p-4 space-y-6">
+          <div>
+            <h4 className="text-sm font-medium text-orange-600 mb-3 flex items-center gap-1.5">
+              <HelpCircle className="w-4 h-4" />
+              存疑待复核 ({warningCount})
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {collections
+                .filter((c) => c.riskLevel === 'warning')
+                .slice(0, 6)
+                .map((collection) => (
+                  <div
+                    key={collection.id}
+                    className="flex items-center gap-3 p-3 bg-orange-50 rounded-xl border border-orange-100"
+                  >
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-paper-200 flex-shrink-0">
+                      <img
+                        src={collection.imageUrl}
+                        alt={collection.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-ink-800 text-sm truncate">
+                        {collection.name}
+                      </h4>
+                      <p className="text-xs text-warm-gray-500">{collection.id}</p>
+                      <p className="text-xs text-orange-600 mt-0.5">
+                        存疑待复核，需专家二次鉴定
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-ink-800 text-sm truncate">
-                      {collection.name}
-                    </h4>
-                    <p className="text-xs text-warm-gray-500">{collection.id}</p>
-                    <p className="text-xs text-red-600 mt-0.5">
-                      疑似仿品，需复核
-                    </p>
-                  </div>
-                </div>
-              ))}
-          </div>
-          {collections.filter((c) => c.riskLevel === 'high').length === 0 && (
-            <div className="text-center py-8">
-              <ShieldCheck className="w-10 h-10 text-emerald-300 mx-auto mb-2" />
-              <p className="text-warm-gray-500 text-sm">暂无风险预警</p>
+                ))}
+              {warningCount === 0 && (
+                <p className="text-xs text-warm-gray-400 col-span-full">暂无存疑藏品</p>
+              )}
             </div>
-          )}
+          </div>
+
+          <div>
+            <h4 className="text-sm font-medium text-red-600 mb-3 flex items-center gap-1.5">
+              <AlertTriangle className="w-4 h-4" />
+              仿品风险 ({highRiskCount})
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {collections
+                .filter((c) => c.riskLevel === 'high')
+                .slice(0, 6)
+                .map((collection) => (
+                  <div
+                    key={collection.id}
+                    className="flex items-center gap-3 p-3 bg-red-50 rounded-xl border border-red-100"
+                  >
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-paper-200 flex-shrink-0">
+                      <img
+                        src={collection.imageUrl}
+                        alt={collection.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-ink-800 text-sm truncate">
+                        {collection.name}
+                      </h4>
+                      <p className="text-xs text-warm-gray-500">{collection.id}</p>
+                      <p className="text-xs text-red-600 mt-0.5">
+                        已确认为仿品，禁止交易
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              {highRiskCount === 0 && (
+                <p className="text-xs text-warm-gray-400 col-span-full">暂无仿品风险藏品</p>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

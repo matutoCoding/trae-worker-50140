@@ -7,6 +7,7 @@ import {
   User,
   Award,
   Eye,
+  HelpCircle,
 } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import StatCard from '@/components/StatCard';
@@ -14,7 +15,7 @@ import StatusBadge from '@/components/StatusBadge';
 import { formatDate, generateId } from '@/utils/format';
 
 export default function Authentication() {
-  const { collections, appraisals, addAppraisal, updateCollection } = useStore();
+  const { collections, appraisals, addAppraisal } = useStore();
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | null>(null);
   const [showCertificate, setShowCertificate] = useState(false);
   const [appraisalForm, setAppraisalForm] = useState({
@@ -28,6 +29,7 @@ export default function Authentication() {
   const pendingCollections = collections.filter((c) => c.status === 'pending');
   const authenticCount = appraisals.filter((a) => a.conclusion === 'authentic').length;
   const replicaCount = appraisals.filter((a) => a.conclusion === 'replica').length;
+  const suspiciousCount = appraisals.filter((a) => a.conclusion === 'suspicious').length;
 
   const selectedCollection = collections.find((c) => c.id === selectedCollectionId);
   const existingAppraisal = appraisals.find((a) => a.collectionId === selectedCollectionId);
@@ -46,10 +48,6 @@ export default function Authentication() {
     };
 
     addAppraisal(appraisal);
-    updateCollection(selectedCollectionId, {
-      status: appraisalForm.conclusion === 'authentic' ? 'authentic' : 'replica',
-      riskLevel: appraisalForm.conclusion === 'replica' ? 'high' : 'low',
-    });
 
     setSelectedCollectionId(null);
     setAppraisalForm({
@@ -99,6 +97,14 @@ export default function Authentication() {
           value={replicaCount}
           icon={AlertCircle}
           subtitle="已标记为仿品"
+          valueColor="text-red-600"
+        />
+        <StatCard
+          title="存疑待复核"
+          value={suspiciousCount}
+          icon={HelpCircle}
+          subtitle="需进一步鉴定"
+          valueColor="text-orange-600"
         />
         <StatCard
           title="鉴定证书"
