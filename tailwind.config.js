@@ -1,0 +1,92 @@
+/** @type {import('tailwindcss').Config} */
+
+export default {
+  darkMode: "class",
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    container: {
+      center: true,
+      padding: '2rem',
+    },
+    extend: {
+      colors: {
+        vermilion: {
+          50: '#fdf2f2',
+          100: '#fce4e4',
+          200: '#f8c9c9',
+          300: '#f1a3a3',
+          400: '#e87070',
+          500: '#dc143c',
+          600: '#b22222',
+          700: '#8b1a1a',
+          800: '#6b1414',
+          900: '#4a0e0e',
+        },
+        bronze: {
+          50: '#fbf8f0',
+          100: '#f5edd8',
+          200: '#eadab0',
+          300: '#dcc282',
+          400: '#c5a059',
+          500: '#a68b3d',
+          600: '#8b7031',
+          700: '#6e5828',
+          800: '#5a4722',
+          900: '#4a3b1d',
+        },
+        ink: {
+          50: '#f6f6f6',
+          100: '#e7e7e7',
+          200: '#d1d1d1',
+          300: '#b0b0b0',
+          400: '#888888',
+          500: '#6d6d6d',
+          600: '#404040',
+          700: '#2d2d2d',
+          800: '#1a1a1a',
+          900: '#0d0d0d',
+        },
+        paper: {
+          50: '#fdfbf7',
+          100: '#faf7f0',
+          200: '#f5f0e6',
+          300: '#ede5d3',
+          400: '#e2d6b8',
+          500: '#d4c49a',
+          600: '#c5b07c',
+          700: '#a89362',
+          800: '#88764f',
+          900: '#6e6042',
+        },
+        warm: {
+          gray: {
+            50: '#faf9f8',
+            100: '#f3f1ef',
+            200: '#e6e2de',
+            300: '#d4cfc8',
+            400: '#b8b2a8',
+            500: '#9e968b',
+            600: '#8b8680',
+            700: '#736e68',
+            800: '#5e5a55',
+            900: '#4e4a46',
+          },
+        },
+      },
+      fontFamily: {
+        serif: ['"Noto Serif SC"', '"Source Han Serif CN"', '"SimSun"', 'serif'],
+        sans: ['"Noto Sans SC"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
+      },
+      boxShadow: {
+        'card': '0 2px 12px rgba(26, 26, 26, 0.06)',
+        'card-hover': '0 8px 24px rgba(26, 26, 26, 0.1)',
+        'inner-glow': 'inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+      },
+      backgroundImage: {
+        'paper-texture': "linear-gradient(135deg, #f5f0e6 0%, #ede5d3 100%)",
+        'ink-wash': "linear-gradient(180deg, rgba(26,26,26,0.02) 0%, rgba(26,26,26,0.06) 100%)",
+      },
+    },
+  },
+  plugins: [],
+};
